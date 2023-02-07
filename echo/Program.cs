@@ -10,7 +10,7 @@ class Tile
 class Grid
 {
     // Pond grid containing tiles of water/ pebble/ splash
-    public static int size = 50; // Determines the size of the pond
+    public static int size = 20; // Determines the size of the pond
     public Tile[,] grid = generateGrid();
 
     public static Tile[,] generateGrid()
@@ -66,6 +66,7 @@ class Grid
         int y = xy[1];
         Console.SetCursorPosition(x, y);
         Console.Write(grid[x, y].character);
+        Console.SetCursorPosition(0, size + 1);
     }
     public int[] GenerateRandXY()
     {
@@ -93,11 +94,62 @@ class Grid
         }
         if (type.Contains("splash"))
         {
-            character = 'o';
+            character = '°';
         }
-        grid[coord[0], coord[1]].type = type;
-        grid[coord[0], coord[1]].character = character;
-        UpdateTileOutput(coord);
+        try {
+            grid[coord[0], coord[1]].type = type;
+            grid[coord[0], coord[1]].character = character;
+            UpdateTileOutput(coord);
+        }
+        catch(IndexOutOfRangeException)
+        {}
+        
+    }
+
+    public void DrawCircle(int[] center, int radius)
+    {
+        int centerX = center[0];
+        int centerY = center[1];
+        for (int y = centerY - radius; y <= centerY + radius; y++)
+        {
+            for (int x = centerX - radius; x <= centerX + radius; x++)
+            {
+                if (x <= size && y <= size) {
+                    int distance = (int)Math.Round(Math.Sqrt((x - centerX) * (x - centerX) + (y - centerY) * (y - centerY)));
+                    int[] coord = { x, y };
+                    if (distance == radius)
+                    {
+                        changeTile(coord, "splash");
+                    }
+                    if (distance != radius)
+                    {
+                        changeTile(coord, "water");
+                    }
+                    if (x == centerX && y == centerY)
+                    {
+                        changeTile(coord, "pebble");
+                    }
+                }
+                
+            }
+        }
+    }
+
+    public void SimulateRipple(int[] coord)
+    {
+        int a = 0;
+        if (coord[0] >= coord[1])
+        {
+            a = coord[0] +1;
+        }
+        else
+        {
+            a = coord[1] +1;
+        }
+        for(int i = 0; i < a; i++)
+        {
+            DrawCircle(coord, i);
+        }
     }
 
 
@@ -109,11 +161,12 @@ class Program
         Grid board = new Grid();
         board.OutputGrid();
 
-        for (int i = 0; i < 15; i++)
+        for (int i = 0; i < 1; i++)
         {
             int[] xy = board.GenerateRandXY();
             board.changeTile(xy, "pebble");
-            Thread.Sleep(50);
+            board.SimulateRipple(xy);
         }
+        Console.WriteLine("");
     }
 }
