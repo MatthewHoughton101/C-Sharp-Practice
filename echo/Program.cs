@@ -12,7 +12,7 @@ class Tile
 }
 class Grid{
     // Pond grid containing tiles of water/ pebble/ splash
-    public static int size = 50;
+    public static int size = 50; // Determines the size of the pond
     public static Tile[,] grid = generateGrid();
 
     public static Tile[,] generateGrid()
@@ -60,6 +60,31 @@ class Grid{
         randXY[0] = rx;
         randXY[1] = ry;
         return randXY;
+    }
+
+    public static int changeTile(int[] coord, string type)
+    {
+        // Changes tile type using xy coordinates
+        string character = string.Empty;
+        if (type == "water")
+        {
+            character = ".";
+        }
+        if (type == "pebble")
+        {
+            character = "0";
+        }
+        if (type == "splash")
+        {
+            character = "o";
+        }
+        else
+        {
+            return 1;
+        }
+        grid[coord[0], coord[1]].type = type;
+        grid[coord[0], coord[1]].character = character;
+        return 0;
     }
 
     
