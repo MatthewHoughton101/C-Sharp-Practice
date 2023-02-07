@@ -1,4 +1,7 @@
-﻿namespace echo;
+﻿using System.Drawing;
+using System.Runtime.InteropServices;
+
+namespace echo;
 
 class Tile
 {
@@ -10,7 +13,7 @@ class Tile
 class Grid
 {
     // Pond grid containing tiles of water/ pebble/ splash
-    public static int size = 20; // Determines the size of the pond
+    public static int size = 30; // Determines the size of the pond
     public Tile[,] grid = generateGrid();
 
     public static Tile[,] generateGrid()
@@ -80,7 +83,7 @@ class Grid
         return randXY;
     }
 
-    public void changeTile(int[] coord, string type)
+    public int changeTileType(int[] coord, string type)
     {
         // Changes tile type using xy coordinates
         char character = 'X';
@@ -100,11 +103,20 @@ class Grid
             grid[coord[0], coord[1]].type = type;
             grid[coord[0], coord[1]].character = character;
             UpdateTileOutput(coord);
+            return 0;
         }
         catch(IndexOutOfRangeException)
-        {}
+        {
+            return 1;
+        }
         
     }
+
+    public void ChangeTyleColor(int[] coord, ConsoleColor color) {
+        Console.SetCursorPosition(coord[0], coord[1]);
+        Console.BackgroundColor = color;
+    }
+
 
     public void DrawCircle(int[] center, int radius, string type)
     {
@@ -120,17 +132,16 @@ class Grid
                     {
                         int distance = (int)Math.Round(Math.Sqrt((x - centerX) * (x - centerX) + (y - centerY) * (y - centerY)));
                         int[] coord = { x, y };
-                        if (distance == radius)
+                        if (distance == radius && x<size && y<size && x>=0 && y>=0)
                         {
-                            changeTile(coord, type);
-                        }
-                        if (distance != radius)
-                        {
-                            //
+                            if (grid[x,y].type != "pebble")
+                            {
+                                changeTileType(coord, type);
+                            }                            
                         }
                         if (x == centerX && y == centerY)
                         {
-                            changeTile(coord, "pebble");
+                            changeTileType(coord, "pebble");
                         }
                     }
 
@@ -145,17 +156,65 @@ class Grid
         int a = 0;
         if (coord[0] >= coord[1])
         {
-            a = coord[0] +5;
+            a = coord[0] +size;
         }
         else
         {
-            a = coord[1] +5;
+            a = coord[1] +size;
         }
         DrawCircle(coord, 1, "splash");
         for (int i = 2; i < a; i++)
         {
             DrawCircle(coord, i-1, "water");
             DrawCircle(coord, i, "splash");
+            Thread.Sleep(15);
+        }
+    }
+
+    public void startInterface()
+    {
+        int[] OldCoord = { };
+        int x = 0;
+        int y = 0;
+        int[] coord = {x, y};
+        Console.SetCursorPosition(x, y);
+        while (true)
+        {
+            ConsoleKeyInfo ki = Console.ReadKey();
+            if(ki.Key == ConsoleKey.Escape) {
+                break;
+                    }
+            if (ki.Key == ConsoleKey.Enter) {
+                coord[0] = x;
+                coord[1] = y;
+                changeTileType(coord, "pebble");
+                SimulateRipple(coord);
+
+            }
+            if (ki.Key == ConsoleKey.UpArrow)
+            {
+                y--;
+                coord[1] = y;
+            }
+            if (ki.Key == ConsoleKey.DownArrow)
+            {
+                y++;
+                coord[1] = y;
+            }
+            if (ki.Key == ConsoleKey.LeftArrow)
+            {
+                x--;
+                coord[0] = x;
+            }
+            if (ki.Key == ConsoleKey.RightArrow)
+            {
+                x++;
+                coord[0] = x;
+            }
+            
+            ChangeTyleColor(coord, ConsoleColor.Green);
+            ChangeTyleColor(coord, ConsoleColor.Black);
+            OldCoord = coord;
         }
     }
 
@@ -167,13 +226,7 @@ class Program
     {
         Grid board = new Grid();
         board.OutputGrid();
-
-        for (int i = 0; i < 2; i++)
-        {
-            int[] xy = board.GenerateRandXY();
-            board.changeTile(xy, "pebble");
-            board.SimulateRipple(xy);
+        board.startInterface();
+            
         }
-        Console.WriteLine("");
-    }
 }
