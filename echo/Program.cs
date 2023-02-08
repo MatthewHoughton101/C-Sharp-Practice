@@ -40,14 +40,15 @@ class Grid
         //string top = new string('_', size);
         //string bottom = new string('-', size);
         //Console.Write($"\n  {top}\n");
-        for (int i = 0; i < size; i++)
+        for (int x = 0; x < size; x++)
         {
             //Console.Write("| ");
-            for (int j = 0; j < size; j++)
+            for (int y = 0; y < size; y++)
             {
-                Console.Write(grid[i, j].character);
+                int[] xy = { x, y };
+                UpdateTileOutput(xy);
             }
-            Console.Write("\n");
+            //Console.Write("\n");
         }
         //Console.Write($"  {bottom}");
     }
@@ -58,8 +59,8 @@ class Grid
         {
             for (int x = 0; x < size; x++)
             {
-                Console.SetCursorPosition(x, y);
-                Console.Write(grid[x, y].character);
+                int[] xy = { x, y };
+                UpdateTileOutput(xy);
             }
         }
     }
@@ -114,7 +115,7 @@ class Grid
 
     public void ChangeTyleColor(int[] coord, ConsoleColor color) {
         Console.SetCursorPosition(coord[0], coord[1]);
-        Console.BackgroundColor = color;
+        Console.ForegroundColor = color;
     }
 
 
@@ -173,7 +174,7 @@ class Grid
 
     public void startInterface()
     {
-        int[] OldCoord = { };
+        int[] OldCoord = {0,0 };
         int x = 0;
         int y = 0;
         int[] coord = {x, y};
@@ -195,26 +196,28 @@ class Grid
             {
                 y--;
                 coord[1] = y;
+                Console.SetCursorPosition(x, y);
             }
             if (ki.Key == ConsoleKey.DownArrow)
             {
                 y++;
                 coord[1] = y;
+                Console.SetCursorPosition(x, y);
             }
             if (ki.Key == ConsoleKey.LeftArrow)
             {
                 x--;
                 coord[0] = x;
+                Console.SetCursorPosition(x, y);
             }
             if (ki.Key == ConsoleKey.RightArrow)
             {
                 x++;
                 coord[0] = x;
+                Console.SetCursorPosition(x, y);
             }
             
-            ChangeTyleColor(coord, ConsoleColor.Green);
-            ChangeTyleColor(coord, ConsoleColor.Black);
-            OldCoord = coord;
+            
         }
     }
 
