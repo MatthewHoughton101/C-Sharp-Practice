@@ -113,11 +113,6 @@ class Grid
         
     }
 
-    public void ChangeTyleColor(int[] coord, ConsoleColor color) {
-        Console.SetCursorPosition(coord[0], coord[1]);
-        Console.ForegroundColor = color;
-    }
-
 
     public void DrawCircle(int[] center, int radius, string type)
     {
